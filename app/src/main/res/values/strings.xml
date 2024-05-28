@@ -19,6 +19,10 @@
     <string name="registration_fail">Gagal registrasi</string>
     <string name="story_image">Story Image</string>
     <string name="message_welcome">Buatlah ceritamu hari ini di StoryApps\n</string>
+    <string name="retry">Coba Lagi\n</string>
+    <string name="upload_story">Upload</string>
+    <string name="gallery_phone">Galery\n</string>
+    <string name="camera">Camera\n</string>
 
 
 </resources>
