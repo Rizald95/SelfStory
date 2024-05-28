@@ -18,6 +18,7 @@
     <string name="description">Description</string>
     <string name="registration_fail">Gagal registrasi</string>
     <string name="story_image">Story Image</string>
+    <string name="message_welcome">Buatlah ceritamu hari ini di StoryApps\n</string>
 
 
 </resources>
