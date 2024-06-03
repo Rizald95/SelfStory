@@ -9,6 +9,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Query
+import submission.learning.storyapp.data.response.LoginUserResponse
 import submission.learning.storyapp.data.response.RegisterUserResponse
 
 interface ApiServices {
@@ -27,6 +28,10 @@ interface ApiServices {
 
     @POST("login")
     suspend fun login(
-        @Field
-    )
+        @Field("email")
+        email: String,
+
+        @Field("password")
+        password: String
+    ): LoginUserResponse
 }
