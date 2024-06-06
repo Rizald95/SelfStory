@@ -23,6 +23,7 @@
     <string name="upload_story">Upload</string>
     <string name="gallery_phone">Galery\n</string>
     <string name="camera">Camera\n</string>
+    <string name="failed_register">Gagal registrasi user</string>
 
 
 </resources>
