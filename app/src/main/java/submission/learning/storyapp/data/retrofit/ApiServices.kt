@@ -15,6 +15,8 @@ import submission.learning.storyapp.data.response.LoginUserResponse
 import submission.learning.storyapp.data.response.RegisterUserResponse
 
 interface ApiServices {
+
+    @FormUrlEncoded
     @POST("register")
     suspend fun register(
 
@@ -28,6 +30,7 @@ interface ApiServices {
         password: String
     ): RegisterUserResponse
 
+    @FormUrlEncoded
     @POST("login")
     suspend fun login(
         @Field("email")

@@ -7,14 +7,14 @@ import submission.learning.storyapp.data.response.RegisterUserResponse
 import submission.learning.storyapp.repository.UserRepository
 import submission.learning.storyapp.helper.Result
 class RegisterViewModel(private val userRepository: UserRepository): ViewModel() {
-    private val _registerUserResponse = MediatorLiveData<Result<RegisterUserResponse>>()
 
-    val regiserUserResponse: LiveData<Result<RegisterUserResponse>> = _registerUserResponse
+    private val _register = MediatorLiveData<Result<RegisterUserResponse>>()
+    val registerViewModel: LiveData<Result<RegisterUserResponse>> = _register
 
-    fun registerUser(name: String, email: String, password: String) {
+    fun register(name: String, email: String, password: String) {
         val liveData = userRepository.register(name, email, password)
-        _registerUserResponse.addSource(liveData){
-            result -> _registerUserResponse.value = result
+        _register.addSource(liveData){ result ->
+            _register.value = result
         }
     }
 
