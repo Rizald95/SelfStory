@@ -98,6 +98,9 @@ dependencies {
 
     implementation("androidx.camera:camera-core:1.3.0")
 
+
+    implementation ("com.google.android.gms:play-services-basement:17.6.0")
+    implementation ("com.google.android.gms:play-services-vision:20.1.3")
 }
 
 

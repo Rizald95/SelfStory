@@ -24,6 +24,14 @@
     <string name="gallery_phone">Galery\n</string>
     <string name="camera">Camera\n</string>
     <string name="failed_register">Gagal registrasi user</string>
+    <string name="failed_login">gagal login</string>
+    <string name="empty_description">deskripsi kosong</string>
+    <string name="ok_message">Okay</string>
+    <string name="empty_image">Gambar Kosong\n</string>
+    <string name="upload_message">cerita kamu telah ditambahkan</string>
+    <string name="next">Next</string>
+    <string name="error_title">Judul tidak muncul</string>
+    <string name="error_description">Deskripsi tidak muncul</string>
 
 
 </resources>
