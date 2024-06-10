@@ -30,10 +30,10 @@ class DetailActivity : AppCompatActivity() {
 
     private fun getListStoryItemFromIntent(): ListStoryItem? {
         return if (Build.VERSION.SDK_INT >= 33) {
-            intent.getParcelableExtra("listStoryItem", ListStoryItem::class.java)
+            intent.getParcelableExtra("listItemStory", ListStoryItem::class.java)
         } else {
             @Suppress("DEPRECATION")
-            intent.getParcelableExtra("listStoryItem")
+            intent.getParcelableExtra("listItemStory")
         }
     }
 

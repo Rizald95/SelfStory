@@ -20,8 +20,10 @@ class ListUserAdapter(private val listStories: List<ListStoryItem>): RecyclerVie
     inner class ListViewHolder(private val binding: ItemStoryBinding): RecyclerView.ViewHolder(binding.root) {
         private var idStoryImage: ImageView = itemView.findViewById(R.id.id_story_image)
         private var idText: TextView = itemView.findViewById(R.id.id_name)
+        private var idDescription: TextView = itemView.findViewById(R.id.id_description)
         fun bind(listStoryItem: ListStoryItem) {
             binding.idName.text = listStoryItem.name
+            binding.idDescription.text = listStoryItem.description
 
             Glide
                 .with(itemView.context)
@@ -37,7 +39,8 @@ class ListUserAdapter(private val listStories: List<ListStoryItem>): RecyclerVie
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                         itemView.context as Activity,
                         Pair(idStoryImage, "photo"),
-                        Pair(idText, "name")
+                        Pair(idText, "name"),
+                        Pair(idDescription, "description")
                     )
                 itemView.context.startActivity(intent, options.toBundle())
             }
