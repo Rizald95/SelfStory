@@ -1,8 +1,10 @@
 package submission.learning.storyapp.interfaces.detail
 
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowInsets
+import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import submission.learning.storyapp.R
 import submission.learning.storyapp.data.response.ListStoryItem
@@ -12,20 +14,21 @@ class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
     private lateinit var listStoryItem: ListStoryItem
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val listStoryItem: ListStoryItem? = getListStoryItemFromIntent()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (listStoryItem != null) {
-            setupUI(listStoryItem)
-        } else {
+        listStoryItem = getListStoryItemFromIntent() ?: run {
             showError()
+            return
         }
 
-
+        setupUI(listStoryItem)
+        setupView()
     }
 
     private fun getListStoryItemFromIntent(): ListStoryItem? {
@@ -51,5 +54,24 @@ class DetailActivity : AppCompatActivity() {
     private fun showError() {
         binding.idName.text = getString(R.string.error_title)
         binding.idDescription.text = getString(R.string.error_description)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun setupView() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+        } else {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
+        supportActionBar?.show()
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

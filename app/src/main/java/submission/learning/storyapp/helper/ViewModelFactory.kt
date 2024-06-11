@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import submission.learning.storyapp.dependencies.Injection
 import submission.learning.storyapp.interfaces.login.LoginViewModel
 import submission.learning.storyapp.interfaces.main.MainViewModel
+import submission.learning.storyapp.interfaces.maps.MapsViewModel
 import submission.learning.storyapp.interfaces.register.RegisterViewModel
 import submission.learning.storyapp.interfaces.story.InsertViewModel
 import submission.learning.storyapp.repository.UserRepository
@@ -25,6 +26,10 @@ class ViewModelFactory(private val userRepository: UserRepository): ViewModelPro
             }
             modelClass.isAssignableFrom(InsertViewModel::class.java) -> {
                 InsertViewModel(userRepository) as T
+            }
+
+            modelClass.isAssignableFrom(MapsViewModel::class.java) -> {
+                MapsViewModel(userRepository) as T
             }
             else -> throw  IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

@@ -7,7 +7,7 @@
     <string name="title_signup">Lengkapi data untuk profile</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name ="message_login">Masukan Email dan Password dahulu!</string>
+    <string name="message_login">Masukan Email dan Password dahulu!</string>
     <string name="title_login">Sudah siap untuk berbagi cerita?</string>
     <string name="name">Nama</string>
     <string name="message_main_page"> Selamat datang di story app </string>
@@ -32,6 +32,12 @@
     <string name="next">Next</string>
     <string name="error_title">Judul tidak muncul</string>
     <string name="error_description">Deskripsi tidak muncul</string>
+    <string name="title_activity_maps">MapsActivity</string>
+
+    <string name="normal_type">Normal</string>
+    <string name="satellite_type">Satellite</string>
+    <string name="terrain_type">Terrain</string>
+    <string name="hybrid_type">Hybrid</string>
 
 
 </resources>

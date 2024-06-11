@@ -63,4 +63,12 @@ interface ApiServices {
         @Part("lon") lon: RequestBody? = null
     ): AddNewStoriesResponse
 
+
+    @GET("stories")
+    suspend fun getStoriesWithLocation(
+        @Header("Authorization") token: String,
+        @Query("location") location: Int = 1
+    ) : GetAllStoriesResponse
+
+
 }

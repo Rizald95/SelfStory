@@ -2,9 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_logout"
+        android:id="@+id/btn_logout"
+        android:icon="@drawable/ic_logout"
         android:title="@string/logout"
-        app:showAsAction="ifRoom">
+        app:showAsAction="always">
     </item>
+
+    <item
+        android:id="@+id/btn_maps"
+        android:icon="@drawable/ic_location"
+        android:title="locations"
+        app:showAsAction="always">
+
+    </item>
+
 
 </menu>
