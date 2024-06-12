@@ -1,12 +1,17 @@
 package submission.learning.storyapp.interfaces.story
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,18 +19,18 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import submission.learning.storyapp.R
-import submission.learning.storyapp.helper.ViewModelFactory
-import submission.learning.storyapp.helper.Result
 import submission.learning.storyapp.databinding.ActivityInsertStoryBinding
-import submission.learning.storyapp.helper.getImageUri
-import submission.learning.storyapp.helper.reduceFileImage
-import submission.learning.storyapp.helper.uriToFile
+import submission.learning.storyapp.helper.*
 import submission.learning.storyapp.interfaces.main.MainActivity
+import kotlinx.coroutines.launch
+import android.provider.Settings
 
 class InsertStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityInsertStoryBinding
@@ -34,14 +39,30 @@ class InsertStoryActivity : AppCompatActivity() {
     }
 
     private var currentImageUri: Uri? = null
+    private var currentLocation: Location? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
+                getLastLocation()
+            }
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                getLastLocation()
+            }
+            else -> binding.switchLocation.isChecked = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityInsertStoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (!allPermissionGranted()) {
-            requestPermission.launch(REQUIRED_PERMISSION)
+        if (!allPermissionsGranted()) {
+            requestPermissions()
         }
 
         val launcherIntentCamera = registerForActivityResult(
@@ -74,7 +95,7 @@ class InsertStoryActivity : AppCompatActivity() {
 
                 if (description.isEmpty()) {
                     AlertDialog.Builder(this).apply {
-                        setTitle("Please tell us about your story :)")
+                        setTitle("Ceritakan cerita kamu:)")
                         setMessage(getString(R.string.empty_description))
                         setCancelable(false)
                         setPositiveButton(getString(R.string.ok_message)) { _, _ ->
@@ -99,10 +120,99 @@ class InsertStoryActivity : AppCompatActivity() {
 
                     viewModel.getSession().observe(this) { user ->
                         token = user.token
-                        viewModel.addStory(token, multipartBody, requestBody)
+                        viewModel.addStoryWithLocation(token, multipartBody, requestBody, currentLocation)
                     }
                 }
             } ?: showToast(getString(R.string.empty_image))
+        }
+
+        binding.switchLocation.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+            if (isChecked) {
+                if (!isGpsEnabled()) {
+                    showGpsMessage()
+                }
+                lifecycleScope.launch {
+                    getLastLocation()
+                }
+            } else {
+                currentLocation = null
+            }
+        }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+    }
+
+    private fun allPermissionsGranted() =
+        ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+
+    private fun requestPermissions() {
+        requestPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
+    @Suppress("MissingPermission")
+    private fun getLastLocation() {
+        if (allPermissionsGranted()) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    currentLocation = location
+                } else {
+                    Toast.makeText(
+                        this,
+                        R.string.location_not_found,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    requestNewLocation()
+                }
+            }
+        } else {
+            requestPermissions()
+        }
+    }
+
+    private fun isGpsEnabled(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
+
+    private fun showGpsMessage() {
+        AlertDialog.Builder(this).apply {
+            setTitle(getString(R.string.gps_message_title))
+            setMessage(getString(R.string.gps_message))
+            setPositiveButton(getString(R.string.next)) { _, _ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            create()
+            show()
+        }
+    }
+
+    @Suppress("MissingPermission")
+    private fun requestNewLocation() {
+        val locationRequest = LocationRequest.create().apply {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = 10000
+            fastestInterval = 5000
+            numUpdates = 1
+        }
+
+        if (allPermissionsGranted()) {
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest, locationCallback, Looper.getMainLooper()
+            )
+        }
+    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            super.onLocationResult(locationResult)
+            currentLocation = locationResult.lastLocation
         }
     }
 
@@ -111,11 +221,11 @@ class InsertStoryActivity : AppCompatActivity() {
             when (it) {
                 is Result.Loading -> {
                     showLoading(true)
-                    disableInterface()
+                    setInterfaceEnabled(false)
                 }
                 is Result.Success -> {
                     showLoading(false)
-                    enableInterface()
+                    setInterfaceEnabled(true)
                     AlertDialog.Builder(this).apply {
                         setTitle("Alright")
                         setMessage(getString(R.string.upload_message))
@@ -132,24 +242,27 @@ class InsertStoryActivity : AppCompatActivity() {
                 }
                 is Result.Error -> {
                     showLoading(false)
-                    enableInterface()
+                    setInterfaceEnabled(true)
                 }
             }
         }
     }
 
+    private fun setInterfaceEnabled(isEnabled: Boolean) {
+        binding.apply {
+            buttonCamera.isEnabled = isEnabled
+            buttonGallery.isEnabled = isEnabled
+            buttonUpload.isEnabled = isEnabled
+            editTextDescription.isEnabled = isEnabled
+        }
+    }
+
     private fun disableInterface() {
-        binding.buttonCamera.isEnabled = false
-        binding.buttonGallery.isEnabled = false
-        binding.buttonUpload.isEnabled = false
-        binding.editTextDescription.isEnabled = false
+        setInterfaceEnabled(false)
     }
 
     private fun enableInterface() {
-        binding.buttonCamera.isEnabled = true
-        binding.buttonGallery.isEnabled = true
-        binding.buttonUpload.isEnabled = true
-        binding.editTextDescription.isEnabled = true
+        setInterfaceEnabled(true)
     }
 
     private val requestPermission = registerForActivityResult(

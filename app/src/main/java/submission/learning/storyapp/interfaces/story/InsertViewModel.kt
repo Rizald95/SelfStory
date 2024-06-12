@@ -1,5 +1,6 @@
 package submission.learning.storyapp.interfaces.story
 
+import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,13 @@ class InsertViewModel(private val userRepository: UserRepository): ViewModel() {
         val liveData = userRepository.addStoryApp(token, file, description)
         _insertStoryResponse.addSource(liveData) {
             result -> _insertStoryResponse.value = result
+        }
+    }
+
+    fun addStoryWithLocation(token: String, file: MultipartBody.Part, description: RequestBody, myLocation: Location?) {
+        val liveData = userRepository.addStoryAppWithLocation(token, file, description , myLocation)
+        _insertStoryResponse.addSource(liveData) {
+                result -> _insertStoryResponse.value = result
         }
     }
 

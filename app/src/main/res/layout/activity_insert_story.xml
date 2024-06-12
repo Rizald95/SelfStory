@@ -57,16 +57,27 @@
         app:layout_constraintVertical_bias="0.506"
         tools:ignore="VisualLintButtonSize" />
 
+
     <TextView
-        android:id="@+id/text_view_location"
-        style="@style/Common"
+        android:id="@+id/tvLocation"
+        style="@style/Normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/text_input_layout_description"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_gallery" />
+        app:layout_constraintTop_toBottomOf="@+id/button_gallery"
+        app:layout_constraintBottom_toTopOf="@id/text_input_layout_description"/>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switch_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvLocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvLocation" />
+
 
 
     <com.google.android.material.textfield.TextInputLayout

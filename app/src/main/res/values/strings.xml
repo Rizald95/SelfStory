@@ -38,6 +38,9 @@
     <string name="satellite_type">Satellite</string>
     <string name="terrain_type">Terrain</string>
     <string name="hybrid_type">Hybrid</string>
+    <string name="location_not_found">Lokasi tidak ditemukan\n</string>
+    <string name="gps_message_title">GPs dapat\n</string>
+    <string name="gps_message">pesan masuk</string>
 
 
 </resources>

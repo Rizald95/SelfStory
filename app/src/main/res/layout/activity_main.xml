@@ -14,14 +14,7 @@
         tools:listitem="@layout/item_story">
     </androidx.recyclerview.widget.RecyclerView>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_gravity="center"
-        tools:visibility="visible" />
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_story"
@@ -34,6 +27,15 @@
         tools:ignore="ImageContrastCheck,RedundantDescriptionCheck">
 
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        tools:visibility="visible" />
 
 
 

@@ -8,6 +8,9 @@
     <style name="Common">
         <item name="android:textSize">19sp</item>
     </style>
+    <style name="Normal">
+        <item name="android:textSize">19sp</item>
+    </style>
 
 
 </resources>
