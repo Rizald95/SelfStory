@@ -22,6 +22,8 @@ import submission.learning.storyapp.DataDummy
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.recyclerview.widget.ListUpdateCallback
 import submission.learning.storyapp.LiveDataTestUtil.getOrAwaitValue
+import submission.learning.storyapp.LogUtil
+import submission.learning.storyapp.MainDispatcherRules
 import submission.learning.storyapp.interfaces.adapter.ListUserLocationAdapter
 
 @ExperimentalCoroutinesApi
@@ -31,51 +33,58 @@ class MainViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
+    @get:Rule
+    val mainDispatcherRules = MainDispatcherRules()
+
     @Mock
     private lateinit var userRepository: UserRepository
     private val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLXdBOEpwVmlVLUdxLWd1bXgiLCJpYXQiOjE3MTgyNzk1MTN9.ddX2TbUjOneVOMPT4h7lFt9gFvSsrxmdhlQP8l1RyOE"
-    private val dummyStoryApp = DataDummy.generateDummyStoryAppResponse()
+
 
     @Test
     fun `when Get Story is Not Null and Return Data Story`() = runTest {
-        val data: PagingData<ListStoryItem> = StoryPagingDataSource.snapShot(dummyStoryApp)
-        val expectedStoryApp = MutableLiveData<PagingData<ListStoryItem>>()
-        expectedStoryApp.value = data
+        LogUtil.mockLog()
+       val quote = DataDummy.generateDummyStoryAppResponse()
+        val data: PagingData<ListStoryItem> = StoryPagingDataSource.snapshot(quote)
+        val expectedQuote = MutableLiveData<PagingData<ListStoryItem>>()
+        expectedQuote.value = data
+        Mockito. `when`(userRepository.getStoriesLocation(token)).thenReturn(expectedQuote)
 
-        Mockito.`when`(userRepository.getStoriesLocation(token)).thenReturn(expectedStoryApp)
         val mainViewModel = MainViewModel(userRepository)
-        val actualStory: PagingData<ListStoryItem> = mainViewModel.listStoryLocation(token).getOrAwaitValue()
+        val storyApp: PagingData<ListStoryItem> = mainViewModel.listStoryLocation(token).getOrAwaitValue()
 
-        val differ = AsyncPagingDataDiffer(
-            diffCallback = ListUserLocationAdapter.DIFF_CALLBACK,
-            updateCallback = noopListUpdateCallback,
-            workerDispatcher = Dispatchers.Main,
-        )
-        differ.submitData(actualStory)
-
-        assertNotNull(differ.snapshot())
-        assertEquals(dummyStoryApp.size, differ.snapshot().size)
-        assertEquals(dummyStoryApp[0], differ.snapshot()[0])
-    }
-
-    @Test
-    fun `when Get Story Empty Should Return No Data`() = runTest {
-        val data: PagingData<ListStoryItem> = PagingData.from(emptyList())
-        val expectedStoryApp = MutableLiveData<PagingData<ListStoryItem>>()
-        expectedStoryApp.value = data
-
-        Mockito.`when`(userRepository.getStoriesLocation(token)).thenReturn(expectedStoryApp)
-        val mainViewModel = MainViewModel(userRepository)
-        val actualStory: PagingData<ListStoryItem> = mainViewModel.listStoryLocation(token).getOrAwaitValue()
-
-        val differ = AsyncPagingDataDiffer(
+        val differData = AsyncPagingDataDiffer(
             diffCallback = ListUserLocationAdapter.DIFF_CALLBACK,
             updateCallback = noopListUpdateCallback,
             workerDispatcher = Dispatchers.Main
         )
-        differ.submitData(actualStory)
+        differData.submitData(storyApp)
 
-        assertEquals(0, differ.snapshot().size)
+        assertNotNull(differData.snapshot())
+        assertEquals(quote.size, differData.snapshot().size)
+        assertEquals(quote[0], differData.snapshot()[0])
+    }
+
+    @Test
+    fun `when Get Story Empty Should Return No Data`() = runTest {
+        LogUtil.mockLog()
+        val data: PagingData<ListStoryItem> = PagingData.from(emptyList())
+        val expectedStory = MutableLiveData<PagingData<ListStoryItem>>()
+        expectedStory.value = data
+        Mockito. `when`(userRepository.getStoriesLocation(token)).thenReturn(expectedStory)
+
+        val mainViewModel = MainViewModel(userRepository)
+        val realStory: PagingData<ListStoryItem> = mainViewModel.listStoryLocation(token).getOrAwaitValue()
+
+        val differData = AsyncPagingDataDiffer(
+            diffCallback = ListUserLocationAdapter.DIFF_CALLBACK,
+            updateCallback = noopListUpdateCallback,
+            workerDispatcher = Dispatchers.Main
+        )
+        differData.submitData(realStory)
+
+        assertEquals(0, differData.snapshot().size)
+
     }
 }
 
@@ -89,7 +98,7 @@ class StoryPagingDataSource : PagingSource<Int, ListStoryItem>() {
     }
 
     companion object {
-        fun snapShot(items: List<ListStoryItem>): PagingData<ListStoryItem> {
+        fun snapshot(items: List<ListStoryItem>): PagingData<ListStoryItem> {
             return PagingData.from(items)
         }
     }

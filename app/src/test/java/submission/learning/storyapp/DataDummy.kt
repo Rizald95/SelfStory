@@ -3,7 +3,7 @@ package submission.learning.storyapp
 import submission.learning.storyapp.data.response.ListStoryItem
 
 object DataDummy {
-    fun generateDummyStoryAppResponse(): List<ListStoryItem> {
+    fun  generateDummyStoryAppResponse(): List<ListStoryItem> {
         val items: MutableList<ListStoryItem> = arrayListOf()
         for (i in 0..100) {
             val storyApp = ListStoryItem(
